@@ -1,14 +1,11 @@
 <?php
 
-#
-# lib_bcrypt - bcrypt hashing in PHP
-#
-# Based on Portable PHP password hashing framework:
-# 
-#	http://www.openwall.com/phpass/
-#
-# There's absolutely no warranty.
-#
+/*
+ * lib_bcrypt - bcrypt hashing in PHP
+ * 
+ *  Based on Portable PHP password hashing framework: http://www.openwall.com/phpass/
+ * 
+ */
 
 class BCryptHasher {
 
@@ -23,7 +20,7 @@ class BCryptHasher {
      * @throws Exception 
      */
     public function __construct() {
-        if (CRYPT_BLOWFISH != 1)
+        if (!CRYPT_BLOWFISH)
             throw new Exception("lib_bcrypt requires CRYPT_BLOWFISH PHP support");
 
         $this->random_state = microtime();
@@ -76,14 +73,16 @@ class BCryptHasher {
      * @return string 
      */
     private function gensalt_blowfish($input, $work_factor) {
-        # This one needs to use a different order of characters and a
-        # different encoding scheme from the one in encode64() in phpass.
-        # We care because the last character in our encoded string will
-        # only represent 2 bits.  While two known implementations of
-        # bcrypt will happily accept and correct a salt string which
-        # has the 4 unused bits set to non-zero, we do not want to take
-        # chances and we also do not want to waste an additional byte
-        # of entropy.
+
+        /* This one needs to use a different order of characters and a
+         * different encoding scheme from the one in encode64() in phpass.
+         * We care because the last character in our encoded string will
+         * only represent 2 bits.  While two known implementations of
+         * bcrypt will happily accept and correct a salt string which
+         * has the 4 unused bits set to non-zero, we do not want to take
+         * chances and we also do not want to waste an additional byte
+         * of entropy.
+         */
         $itoa64 = './ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
         $output = '$2a$';
