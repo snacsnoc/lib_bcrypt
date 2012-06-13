@@ -6,9 +6,9 @@ Don't argue. Just do it.
 
 Do it more easily by using this library:
 
-    require('lib_bcrypt.php');
+    require 'lib_bcrypt.php';
 
-    $hasher = new BCryptHasher();
+    $hasher = new BCryptHasher;
 
     $hash = $hasher->HashPassword($plaintext_password);
 
@@ -17,11 +17,11 @@ need to check their password is correct:
 
     if ($hasher->CheckPassword($entered_password, $hash)){
 
-        # password is legit
+        # Password matches
 
     }else{
 
-        # Y U NO USE CORRECT PASSWORD????
+        # Incorrect password
     }
 
 
