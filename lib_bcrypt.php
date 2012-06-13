@@ -18,9 +18,13 @@ class BCryptHasher {
      */
     private $random_state;
 
-    function BCryptHasher() {
+    /**
+     * Construction method. Check if there is Blowfish support.
+     * @throws Exception 
+     */
+    public function __construct() {
         if (CRYPT_BLOWFISH != 1)
-            throw new Exception("lib_bcrypt requires CRYPT_BLOWFISH PHP support!");
+            throw new Exception("lib_bcrypt requires CRYPT_BLOWFISH PHP support");
 
         $this->random_state = microtime();
         $this->random_state .= uniqid('', true);
@@ -39,10 +43,16 @@ class BCryptHasher {
         if (function_exists('openssl_random_pseudo_bytes')) {
             $output = openssl_random_pseudo_bytes($count);
         } else {
-            if (is_readable('/dev/urandom') &&
-                    ($fh = @fopen('/dev/urandom', 'rb'))) {
-                $output = fread($fh, $count);
-                fclose($fh);
+            if (is_readable('/dev/urandom')) {
+                if ($fh = @fopen('/dev/urandom', 'rb')) {
+                    $output = fread($fh, $count);
+                    fclose($fh);
+                }
+            } else {
+                /*
+                 * If OpenSSL isn't present and neither is /dev/urandom, provide a fallback method.
+                 */
+                $output = bin2hex(mcrypt_create_iv($count, MCRYPT_DEV_URANDOM));
             }
         }
         if (strlen($output) < $count) {
@@ -131,7 +141,7 @@ class BCryptHasher {
      */
     public function CheckPassword($password, $stored_hash) {
         $hash = crypt($password, $stored_hash);
-        return $hash == $stored_hash;
+        return $hash === $stored_hash;
     }
 
 }
